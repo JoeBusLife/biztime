@@ -32,7 +32,7 @@ describe('GET /companies/:code', function(){
 	test('Gets a single company', async () => {
 		const res = await request(app).get(`/companies/${testCompany.code}`);
 		expect(res.statusCode).toEqual(200);
-		expect(res.body).toEqual({ company: testCompany });
+		expect(res.body).toEqual({ company: {...testCompany, industries: [null], invoices: []}  });
 	});
 	test('Responds with 404 for invalid code', async () => {
 		const res = await request(app).get(`/companies/21`);
@@ -42,9 +42,10 @@ describe('GET /companies/:code', function(){
 
 describe("POST /companies", () => {
   test("Creates a single company", async () => {
-		let newCompany = { code: 'yolo', name: 'Yolo Industries', description: 'iykyk' }
+		let newCompany = { name: 'Yolo Industries', description: 'iykyk' };
     const res = await request(app).post('/companies').send(newCompany);
     expect(res.statusCode).toBe(201);
+		newCompany.code = "yolo";
     expect(res.body).toEqual({ company: newCompany })
   })
 })
@@ -55,7 +56,7 @@ describe("PATCH /companies/:code", () => {
     const res = await request(app).patch(`/companies/${testCompany.code}`).send(testCompanyChanges);
     expect(res.statusCode).toBe(201);
     expect(res.body).toEqual({ company: testCompanyChanges })
-  })
+  });
 	test('Responds with 404 for invalid code', async () => {
 		const res = await request(app).patch(`/companies/22`).send("hi");
 		expect(res.statusCode).toEqual(404);
@@ -67,7 +68,7 @@ describe("DELETE /companies/:code", () => {
 		const res = await request(app).delete(`/companies/${testCompany.code}`);
     expect(res.statusCode).toBe(200);
     expect(res.body).toEqual({status: "deleted"})
-  })
+  });
 	test('Responds with 404 for invalid code', async () => {
 		const res = await request(app).delete(`/companies/23`);
 		expect(res.statusCode).toEqual(404);
